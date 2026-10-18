@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="An illustrated explainer of new primate research showing that neurons alternate about 15 times per second between the image you see and the one you don't.">
+<meta property="og:title" content="The Flicker of Consciousness">
+<meta property="og:description" content="An illustrated explainer of new primate research showing that neurons alternate about 15 times per second between the image you see and the one you don't.">
+<meta property="og:type" content="article">
+<title>The Flicker of Consciousness</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout concept: a single reading column on deep ink, with full-width figure bands;
+   the paper's own state colors (orange = conscious, violet = suppressed) carry the story. */
+:root{
+  --bg:#0e0f17;
+  --surface:#171927;
+  --surface2:#1d2032;
+  --fg:#ece9e1;
+  --muted:#a09db0;
+  --line:#2b2e42;
+  --conscious:#f2a63b;
+  --conscious-soft:rgba(242,166,59,.14);
+  --suppressed:#9b82f2;
+  --suppressed-soft:rgba(155,130,242,.16);
+  --good:#5ec98f;
+  --bad:#e5737f;
+  --display:"Fraunces",Georgia,"Times New Roman",serif;
+  --body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#faf7f0; --surface:#ffffff; --surface2:#f1ede2;
+    --fg:#211e2b; --muted:#6c6878; --line:#e2ddcf;
+    --conscious:#c07d0a; --conscious-soft:rgba(192,125,10,.12);
+    --suppressed:#6a4fd0; --suppressed-soft:rgba(106,79,208,.12);
+    --good:#1f9560; --bad:#c2444f;
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#faf7f0; --surface:#ffffff; --surface2:#f1ede2;
+  --fg:#211e2b; --muted:#6c6878; --line:#e2ddcf;
+  --conscious:#c07d0a; --conscious-soft:rgba(192,125,10,.12);
+  --suppressed:#6a4fd0; --suppressed-soft:rgba(106,79,208,.12);
+  --good:#1f9560; --bad:#c2444f;
+  color-scheme:light;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--fg);
+  font-family:var(--body); font-size:17px; line-height:1.65;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0;
+}
+.col{max-width:680px; margin:0 auto}
+.wide{max-width:860px; margin:0 auto}
+p{margin:0 0 1.1em}
+strong{font-weight:600}
+a{color:var(--fg)}
+h1,h2,h3{font-family:var(--display); text-wrap:balance; line-height:1.12; margin:0}
+h1{font-size:clamp(2.3rem,7.5vw,3.6rem); font-weight:700; letter-spacing:-.01em}
+h2{font-size:clamp(1.5rem,4.5vw,2.1rem); font-weight:600; margin-bottom:.55em}
+.eyebrow{
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); display:flex; align-items:center; gap:.6em; margin-bottom:1em;
+}
+.eyebrow .n{color:var(--conscious); font-weight:500}
+.eyebrow::after{content:""; flex:1; height:1px; background:var(--line)}
+.dek{font-size:clamp(1.05rem,3vw,1.3rem); color:var(--muted); line-height:1.5; text-wrap:balance}
+section{padding-block:3.4rem; border-top:1px solid var(--line)}
+header.hero{padding-block:3.2rem 2.6rem}
+.k-conscious{color:var(--conscious); font-weight:600}
+.k-suppressed{color:var(--suppressed); font-weight:600}
+.small{font-size:.82rem; color:var(--muted)}
+.mono{font-family:var(--mono)}
+
+.fig{
+  background:var(--surface); border:1px solid var(--line); border-radius:12px;
+  padding:1.1rem 1rem 1rem; margin:1.6rem 0;
+}
+.fig figcaption{font-size:.82rem; color:var(--muted); margin-top:.8rem; line-height:1.5}
+.fig figcaption b{color:var(--fg); font-weight:600}
+svg{display:block; width:100%; height:auto}
+svg text{font-family:var(--mono); fill:var(--muted)}
+
+/* stat band */
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:.8rem; margin:1.8rem 0 0}
+.stat{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:.85rem .9rem}
+.stat .v{font-family:var(--display); font-size:1.7rem; font-weight:600; line-height:1.1; font-variant-numeric:tabular-nums}
+.stat .l{font-size:.74rem; color:var(--muted); margin-top:.3rem; line-height:1.35}
+
+/* hero flicker strip */
+.heroStrip{margin-top:2.2rem}
+
+/* flicker demo */
+.demoWrap{display:flex; flex-direction:column; gap:1rem}
+.percepts{display:grid; grid-template-columns:1fr 1fr; gap:.8rem}
+.pCard{
+  border:2px solid var(--line); border-radius:12px; padding:.8rem .6rem .7rem;
+  text-align:center; transition:border-color .12s, box-shadow .12s, opacity .12s;
+  background:var(--surface2); opacity:.45;
+}
+.pCard .tag{font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; margin-top:.5rem; color:var(--muted)}
+.pCard.c.on{border-color:var(--conscious); box-shadow:0 0 0 3px var(--conscious-soft); opacity:1}
+.pCard.s.on{border-color:var(--suppressed); box-shadow:0 0 0 3px var(--suppressed-soft); opacity:1}
+.pCard.c.on .tag{color:var(--conscious)}
+.pCard.s.on .tag{color:var(--suppressed)}
+.pCard svg{max-width:120px; margin:0 auto}
+.track{position:relative; height:46px; border-radius:8px; overflow:hidden; border:1px solid var(--line)}
+.track .seg{position:absolute; top:0; bottom:0}
+.track .seg.c{background:var(--conscious)}
+.track .seg.s{background:var(--suppressed)}
+.track .head{position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--fg); box-shadow:0 0 6px rgba(0,0,0,.5)}
+.trackLbl{display:flex; justify-content:space-between; font-family:var(--mono); font-size:.68rem; color:var(--muted); margin-top:.35rem}
+.legend{display:flex; flex-wrap:wrap; gap:1rem; font-size:.78rem; color:var(--muted); margin-top:.2rem}
+.legend span{display:inline-flex; align-items:center; gap:.4em}
+.sw{width:.75em; height:.75em; border-radius:3px; display:inline-block}
+.sw.c{background:var(--conscious)} .sw.s{background:var(--suppressed)}
+
+/* reconstruction grid */
+.reconGrid{display:grid; grid-template-columns:repeat(4,1fr); gap:.6rem}
+.reconGrid .cell{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:.55rem .35rem .45rem; text-align:center; min-width:0}
+.reconGrid .cell .cl{font-family:var(--mono); font-size:.6rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin-top:.4rem; line-height:1.3}
+.reconGrid .cell.hl1{border-color:var(--conscious)}
+.reconGrid .cell.hl2{border-color:var(--suppressed)}
+.reconGrid .cell.hl1 .cl{color:var(--conscious)}
+.reconGrid .cell.hl2 .cl{color:var(--suppressed)}
+.reconGrid svg{max-width:92px; margin:0 auto}
+.avgRow{display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:.4rem; align-items:center; margin-top:.9rem}
+.avgRow .op{font-family:var(--display); font-size:1.4rem; color:var(--muted); text-align:center}
+@media (max-width:460px){ .reconGrid svg{max-width:72px} }
+
+/* scatters */
+.scatRow{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.8rem}
+.scat{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:.6rem; min-width:0}
+.scat .sl{font-family:var(--mono); font-size:.68rem; color:var(--muted); margin-top:.45rem; text-align:center; line-height:1.4}
+.scat .sl b{color:var(--fg)}
+
+/* matrix */
+.mx{width:100%; border-collapse:collapse; font-size:.78rem}
+.mx th,.mx td{border:1px solid var(--line); padding:.45rem .35rem; text-align:center}
+.mx th{font-family:var(--mono); font-weight:500; font-size:.66rem; letter-spacing:.04em; text-transform:uppercase; color:var(--muted)}
+.mx td:first-child{text-align:left; font-size:.76rem}
+.mx .ok{color:var(--good); font-weight:600}
+.mx .no{color:var(--bad); font-weight:600}
+.mx .real{background:var(--conscious-soft)}
+.mxWrap{overflow-x:auto}
+
+/* pull quote / takeaway */
+.take{
+  border-left:3px solid var(--conscious); background:var(--surface);
+  border-radius:0 12px 12px 0; padding:1rem 1.1rem; margin:1.6rem 0;
+  font-family:var(--display); font-size:1.15rem; line-height:1.45;
+}
+.caveats{background:var(--surface); border:1px dashed var(--line); border-radius:12px; padding:1rem 1.1rem; font-size:.88rem; color:var(--muted)}
+.caveats b{color:var(--fg)}
+ul.clean{padding-left:1.1rem; margin:.4rem 0 0}
+ul.clean li{margin-bottom:.45rem}
+
+footer{padding-block:2.6rem 3.4rem; border-top:1px solid var(--line); font-size:.82rem; color:var(--muted); line-height:1.6}
+footer .cite{font-family:var(--mono); font-size:.74rem; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:.8rem .9rem; margin-top:.8rem; word-break:break-word}
+
+/* theme toggle */
+.themeBtn{
+  position:fixed; top:calc(env(safe-area-inset-top,0px) + 14px);
+  right:max(16px,env(safe-area-inset-right,0px)); z-index:70;
+  width:40px; height:40px; border-radius:50%;
+  border:1px solid var(--line); background:var(--surface); color:var(--fg);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.18);
+}
+.themeBtn:hover{border-color:var(--conscious)}
+.themeBtn svg{width:18px; height:18px}
+
+/* glossary tooltips */
+.gl{border-bottom:1px dotted var(--muted); cursor:help}
+.gl:hover,.gl:focus-visible{border-bottom-color:var(--conscious); outline:none}
+.glTip{position:absolute; z-index:60; max-width:300px; background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:.65rem .75rem; font-size:.8rem; line-height:1.5; color:var(--fg); font-family:var(--body); box-shadow:0 10px 26px rgba(0,0,0,.3)}
+.glTip .t{font-family:var(--mono); font-size:.64rem; letter-spacing:.09em; text-transform:uppercase; color:var(--conscious); margin-bottom:.3rem}
+
+@media (prefers-reduced-motion: reduce){
+  .pCard{opacity:1 !important}
+  .track .head{display:none}
+}
+</style>
+</head>
+<body>
+
+<button class="themeBtn" id="themeBtn" type="button" aria-label="Toggle color theme">
+  <svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  <svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+</button>
+
+<header class="hero col">
+  <div class="eyebrow"><span class="n">Research explainer</span><span>bioRxiv preprint · Oct 2026</span></div>
+  <h1>The Flicker of Consciousness</h1>
+  <p class="dek" style="margin-top:1rem">
+    When your eyes receive two conflicting images, you consciously see only one. New recordings from the
+    primate brain show that the neurons never settle: they alternate about <strong>15 times per second</strong>
+    between a pure copy of the image you see — and a pure copy of the one you don't.
+  </p>
+  <p class="small" style="margin-top:1.1rem">
+    An illustrated guide to Hesse, Lanfranchi, McGrory, Shi, Engel &amp; Tsao,
+    <em>“Rapid alternation of conscious and suppressed stimulus representations in the primate brain”</em>
+    (UC Berkeley · Princeton · HHMI).
+  </p>
+  <p class="small" style="margin-top:.8rem">Jargon check: any term with a <span class="gl" data-k="demo" tabindex="0">dotted underline</span> has a plain-English definition — tap or hover it.</p>
+  <div class="heroStrip">
+    <div class="track" id="heroTrack" aria-hidden="true"></div>
+    <div class="trackLbl"><span>0 ms</span><span>one second of brain time</span><span>1,000 ms</span></div>
+    <div class="legend">
+      <span><i class="sw c"></i>representing the <b>&nbsp;seen&nbsp;</b> image</span>
+      <span><i class="sw s"></i>representing the <b>&nbsp;suppressed&nbsp;</b> image</span>
+    </div>
+  </div>
+</header>
+
+<section class="col">
+  <div class="eyebrow"><span class="n">01</span><span>The trick</span></div>
+  <h2>Making an image invisible — while it's still there</h2>
+  <p>
+    To study consciousness, you need the physical world to stay constant while conscious experience changes.
+    The team used <strong>binocular flash suppression</strong>: show one face to the left eye for a while, then
+    suddenly flash a different face to the right eye. The new face takes over your awareness. The first face
+    is still physically on screen, hitting your retina the entire time — you just stop seeing it.
+  </p>
+  <figure class="fig">
+    <svg viewBox="0 0 700 300" role="img" aria-label="Flash suppression timeline: face A alone, then face A plus flashed face B, percept switches from A to B">
+      <!-- time axis -->
+      <line x1="60" y1="262" x2="690" y2="262" stroke="var(--line)" stroke-width="1.5"/>
+      <text x="60" y="284" font-size="12">0 s</text>
+      <text x="355" y="284" font-size="12" text-anchor="middle">flash</text>
+      <text x="690" y="284" font-size="12" text-anchor="end">time →</text>
+      <line x1="355" y1="40" x2="355" y2="262" stroke="var(--line)" stroke-dasharray="4 4"/>
+
+      <!-- labels -->
+      <text x="10" y="78" font-size="12">LEFT</text>
+      <text x="10" y="92" font-size="12">EYE</text>
+      <text x="10" y="150" font-size="12">RIGHT</text>
+      <text x="10" y="164" font-size="12">EYE</text>
+      <text x="10" y="222" font-size="12">YOU</text>
+      <text x="10" y="236" font-size="12">SEE</text>
+
+      <!-- left eye: face A whole time -->
+      <rect x="62" y="56" width="626" height="44" rx="8" fill="var(--conscious-soft)" stroke="var(--suppressed)" stroke-opacity="0"/>
+      <rect x="62" y="56" width="626" height="44" rx="8" fill="none" stroke="var(--line)"/>
+      <use href="#faceB" x="78" y="60" width="36" height="36" color="var(--suppressed)"/>
+      <use href="#faceB" x="380" y="60" width="36" height="36" color="var(--suppressed)"/>
+      <text x="130" y="83" font-size="12">face A, shown continuously</text>
+
+      <!-- right eye: blank then face B -->
+      <rect x="62" y="128" width="290" height="44" rx="8" fill="none" stroke="var(--line)"/>
+      <text x="78" y="155" font-size="12">blank</text>
+      <rect x="358" y="128" width="330" height="44" rx="8" fill="var(--conscious-soft)" stroke="var(--conscious)"/>
+      <use href="#faceA" x="372" y="132" width="36" height="36" color="var(--conscious)"/>
+      <text x="420" y="155" font-size="12" fill="var(--conscious)">face B, flashed</text>
+
+      <!-- percept -->
+      <rect x="62" y="200" width="290" height="44" rx="8" fill="none" stroke="var(--suppressed)"/>
+      <use href="#faceB" x="78" y="204" width="36" height="36" color="var(--suppressed)"/>
+      <text x="124" y="227" font-size="12">you see A</text>
+      <rect x="358" y="200" width="330" height="44" rx="8" fill="none" stroke="var(--conscious)"/>
+      <use href="#faceA" x="372" y="204" width="36" height="36" color="var(--conscious)"/>
+      <text x="418" y="227" font-size="12" fill="var(--conscious)">you see B — face A vanishes from awareness</text>
+    </svg>
+    <figcaption><b>Same input, different experience.</b> After the flash, face A is still on the retina but suppressed
+    from awareness. In 14 human participants, the flashed face dominated perception on 82% of trials — so any
+    neural difference between “A” and “B” epochs reflects <em>perception</em>, not the stimulus.</figcaption>
+  </figure>
+</section>
+
+<section class="col">
+  <div class="eyebrow"><span class="n">02</span><span>The 30-year puzzle</span></div>
+  <h2>Neurons barely seemed to care what you see</h2>
+  <p>
+    Here's what has puzzled the field since the 1990s. Take a neuron that fires strongly for face A and weakly
+    for face B when each is shown alone. During rivalry — when A is seen and B suppressed — that neuron
+    <em>should</em> fire as if only A were present. It doesn't. Its selectivity collapses to roughly a quarter
+    of normal, and the “invisible” face can still be decoded from the population.
+  </p>
+  <p>
+    The plots that carry this evidence — and the paper's punchline later on — all share one format, so here is
+    the decoder ring. <strong>Every dot is one neuron</strong>, plotted by the answer to two questions: how much
+    does it prefer face A over face B when each is shown alone (x-axis), and how much of that preference shows
+    up during rivalry (y-axis)? Where the cloud of dots falls tells you which theory is right:
+  </p>
+  <figure class="fig">
+    <svg viewBox="0 0 700 420" role="img" aria-label="Guide to the preference plots: each dot is one neuron; a cloud on the +1 diagonal means neurons track the seen face, on the flat line means awareness makes no difference, on the -1 diagonal means neurons track the unseen face; the actual time-averaged data has slope 0.23">
+      <!-- axis captions -->
+      <text x="300" y="34" font-size="12" text-anchor="middle">the same neuron's preference DURING RIVALRY (y-axis)</text>
+      <text x="155" y="386" font-size="12">← prefers face B</text>
+      <text x="445" y="386" font-size="12" text-anchor="end">prefers face A →</text>
+      <text x="300" y="406" font-size="12" text-anchor="middle">preference with each face shown ALONE (x-axis)</text>
+      <!-- axes -->
+      <line x1="150" y1="215" x2="450" y2="215" stroke="var(--line)" stroke-width="1.5"/>
+      <line x1="300" y1="65" x2="300" y2="365" stroke="var(--line)" stroke-width="1.5"/>
+      <!-- hypothesis lines -->
+      <line x1="160" y1="355" x2="440" y2="75" stroke="var(--conscious)" stroke-width="2.5"/>
+      <line x1="160" y1="215" x2="440" y2="215" stroke="var(--muted)" stroke-width="2" stroke-dasharray="2 5"/>
+      <line x1="160" y1="75" x2="440" y2="355" stroke="var(--suppressed)" stroke-width="2.5"/>
+      <!-- the measured average -->
+      <line x1="160" y1="247" x2="440" y2="183" stroke="var(--fg)" stroke-width="2" stroke-dasharray="7 4"/>
+      <!-- example neuron -->
+      <line x1="398" y1="138" x2="398" y2="215" stroke="var(--fg)" stroke-dasharray="3 3" opacity=".45"/>
+      <line x1="300" y1="138" x2="398" y2="138" stroke="var(--fg)" stroke-dasharray="3 3" opacity=".45"/>
+      <circle cx="398" cy="138" r="5.5" fill="var(--fg)"/>
+      <text x="404" y="130" font-size="12" fill="var(--fg)">one neuron</text>
+      <!-- line labels -->
+      <text x="460" y="80" font-size="13" fill="var(--conscious)" font-weight="600">slope +1</text>
+      <text x="460" y="96" font-size="12">neurons track the face you SEE</text>
+      <text x="460" y="176" font-size="13" fill="var(--fg)" font-weight="600">slope 0.23 — the actual data</text>
+      <text x="460" y="192" font-size="12">the 30-year puzzle</text>
+      <text x="460" y="226" font-size="13" font-weight="600">slope 0</text>
+      <text x="460" y="242" font-size="12">awareness makes no difference</text>
+      <text x="460" y="342" font-size="13" fill="var(--suppressed)" font-weight="600">slope −1</text>
+      <text x="460" y="358" font-size="12">neurons track the face you DON'T see</text>
+    </svg>
+    <figcaption><b>How to read the preference plots.</b> The marked example neuron fires far more for face A than
+    face B when each is shown alone (far right on the x-axis), and keeps most of that preference during rivalry
+    (high on the y-axis) — so it sits near the orange line. If awareness fully drove the neurons, the whole cloud
+    would lie on that <b style="color:var(--conscious)">+1 diagonal</b>; if the neurons only registered the physical
+    stimulus, preferences would vanish onto the <b>flat line</b>; if they tracked the hidden face, the cloud would
+    flip onto the <b style="color:var(--suppressed)">−1 diagonal</b>. What decades of experiments actually found,
+    averaging over time, is the limp dashed line: <b>slope 0.23</b> — a quarter-strength residue matching no
+    hypothesis. The slope is simply “what fraction of each neuron's normal preference survives.” Keep these
+    reference lines in mind: every scatter below uses these same axes.</figcaption>
+  </figure>
+  <figure class="fig">
+    <div class="scatRow">
+      <div class="scat">
+        <svg viewBox="0 0 160 160" id="scatUnamb"></svg>
+        <div class="sl"><b>Images shown alone</b><br>strong selectivity (slope ≈ 1)</div>
+      </div>
+      <div class="scat">
+        <svg viewBox="0 0 160 160" id="scatAvg"></svg>
+        <div class="sl"><b>During rivalry (average)</b><br>selectivity collapses (slope 0.23)</div>
+      </div>
+    </div>
+    <figcaption>Same axes as the guide above (the faint diagonals are the +1 and −1 references). <b>Left:</b> the
+    control — under unambiguous viewing, preferences hold at full strength and the cloud hugs the +1 diagonal.
+    <b>Right:</b> during rivalry, the same cells' preferences collapse toward the flat line — even though
+    perceptually one face is vividly present and the other is gone.
+    <b>No “pure” neural signal of conscious perception had ever been found</b>, fueling the debate over whether
+    consciousness lives in the front of the brain (Global Workspace theories) or the back (Integrated
+    Information, Recurrent Processing).</figcaption>
+  </figure>
+</section>
+
+<section class="col">
+  <div class="eyebrow"><span class="n">03</span><span>The experiment</span></div>
+  <h2>Watch hundreds of face cells, moment by moment</h2>
+  <p>
+    Older studies averaged across trials, blurring away anything fast. Here, the team inserted
+    <strong>Neuropixels probes</strong> — recording hundreds of neurons simultaneously — into the
+    <strong>face patches</strong> of two macaques: areas ML and AM in inferotemporal (IT) cortex, plus two
+    face-selective regions of prefrontal cortex.
+  </p>
+  <p>
+    Face cells have a special property: each one responds linearly along a preferred axis in a mathematical
+    “face space.” That makes the code <em>readable</em> — from population activity you can reconstruct the exact
+    face being represented. By showing <strong>1,500 different faces</strong> in flash suppression, the team could ask,
+    for every 10-millisecond slice of a single trial: <em>which face is the brain representing right now?</em>
+  </p>
+  <figure class="fig">
+    <svg viewBox="0 0 700 250" role="img" aria-label="Macaque brain side view with recording sites ML and AM in temporal cortex and PO and PVL in prefrontal cortex">
+      <path d="M 150 205 C 105 200 70 170 65 130 C 60 88 95 48 160 36 C 240 20 360 18 460 34 C 545 48 615 80 630 120 C 642 152 625 180 585 192 C 560 200 540 198 520 208 C 500 219 470 222 440 214 C 420 228 380 232 350 222 C 320 232 270 230 240 218 C 210 226 170 220 150 205 Z"
+        fill="var(--surface2)" stroke="var(--line)" stroke-width="2"/>
+      <path d="M 300 150 C 360 120 470 110 560 128" fill="none" stroke="var(--line)" stroke-width="1.5"/>
+      <path d="M 180 120 C 230 90 300 76 370 76" fill="none" stroke="var(--line)" stroke-width="1.5"/>
+      <!-- IT sites -->
+      <circle cx="330" cy="190" r="10" fill="var(--conscious)"/>
+      <circle cx="245" cy="196" r="10" fill="var(--conscious)"/>
+      <text x="238" y="238" font-size="13" fill="var(--conscious)">ML · AM — inferotemporal face patches</text>
+      <!-- PFC sites -->
+      <circle cx="565" cy="155" r="9" fill="var(--suppressed)"/>
+      <circle cx="590" cy="120" r="9" fill="var(--suppressed)"/>
+      <text x="470" y="95" font-size="13" fill="var(--suppressed)">PO · PVL — prefrontal</text>
+      <!-- probe -->
+      <line x1="330" y1="190" x2="330" y2="30" stroke="var(--fg)" stroke-width="2"/>
+      <rect x="322" y="18" width="16" height="14" rx="3" fill="var(--fg)"/>
+      <text x="344" y="30" font-size="12">Neuropixels probe — 100s of neurons at once</text>
+    </svg>
+    <figcaption><b>Where they looked.</b> Recordings from 19 sessions across two monkeys, in both the “back”
+    (IT) and “front” (prefrontal) candidate homes of consciousness. Monkeys viewed the displays through
+    red/cyan glasses so each eye got its own image.</figcaption>
+  </figure>
+</section>
+
+<section class="col">
+  <div class="eyebrow"><span class="n">04</span><span>The discovery</span></div>
+  <h2>The brain flickers between two worlds</h2>
+  <p>
+    During a single trial — stimulus constant, percept stable — the population did not hold one representation.
+    It <strong>snapped back and forth</strong> between two states: micro-epochs representing the
+    <span class="k-conscious">conscious face</span> and micro-epochs representing the
+    <span class="k-suppressed">suppressed face</span>, each lasting about 60 ms.
+  </p>
+
+  <figure class="fig">
+    <div class="demoWrap">
+      <div>
+        <div class="track" id="demoTrack"></div>
+        <div class="trackLbl"><span>0 ms</span><span id="demoSpeed">playing at 1/10× speed</span><span>1,000 ms</span></div>
+      </div>
+      <div class="percepts">
+        <div class="pCard c" id="cardC">
+          <svg viewBox="0 0 100 100"><use href="#faceA" width="100" height="100" color="var(--conscious)"/></svg>
+          <div class="tag">State 1 · conscious face</div>
+        </div>
+        <div class="pCard s" id="cardS">
+          <svg viewBox="0 0 100 100"><use href="#faceB" width="100" height="100" color="var(--suppressed)"/></svg>
+          <div class="tag">State 2 · suppressed face</div>
+        </div>
+      </div>
+    </div>
+    <figcaption><b>What one second looks like.</b> The strip shows a typical state sequence inferred from the
+    spikes; the highlighted card is the face the population is representing at the playhead. Median dwell time:
+    <b>~60 ms per state</b> — the two states each occupy about half the time.</figcaption>
+  </figure>
+
+  <div class="stats">
+    <div class="stat"><div class="v" style="color:var(--conscious)">~15/s</div><div class="l">neural state switches per second</div></div>
+    <div class="stat"><div class="v">~60 ms</div><div class="l">median dwell per state (HMM &amp; autocorrelation agree)</div></div>
+    <div class="stat"><div class="v">30×</div><div class="l">faster than conscious perceptual switches in rivalry (~0.5/s)</div></div>
+    <div class="stat"><div class="v">50/50</div><div class="l">time split between seen and unseen representations</div></div>
+  </div>
+  <p style="margin-top:1.4rem">
+    This is far too fast to notice. Your experience feels like a steady image of face B — but underneath,
+    the cortex is spending <em>half its time</em> representing a face you have no awareness of.
+  </p>
+</section>
+
+<section class="col">
+  <div class="eyebrow"><span class="n">05</span><span>Pure signals, at last</span></div>
+  <h2>Each state carries one face — and only one</h2>
+  <p>
+    Using decoding weights trained on unambiguous trials, the team reconstructed the face represented in each
+    state. The result is the paper's centerpiece: <strong>state 1 activity reconstructs the conscious face
+    almost perfectly, with essentially zero trace of the suppressed one</strong>. State 2 is the mirror image —
+    a high-fidelity picture of the face the animal cannot see.
+  </p>
+  <figure class="fig">
+    <div class="reconGrid">
+      <div class="cell"><svg viewBox="0 0 100 100"><use href="#faceA" width="100" height="100" color="var(--fg)"/></svg><div class="cl">Truth: conscious face</div></div>
+      <div class="cell hl1"><svg viewBox="0 0 100 100"><g filter="url(#fuzz)"><use href="#faceA" width="100" height="100" color="var(--conscious)"/></g></svg><div class="cl">Read out of State 1</div></div>
+      <div class="cell"><svg viewBox="0 0 100 100"><use href="#faceB" width="100" height="100" color="var(--fg)"/></svg><div class="cl">Truth: suppressed face</div></div>
+      <div class="cell hl2"><svg viewBox="0 0 100 100"><g filter="url(#fuzz)"><use href="#faceB" width="100" height="100" color="var(--suppressed)"/></g></svg><div class="cl">Read out of State 2</div></div>
+    </div>
+    <div class="avgRow">
+      <div class="cell" style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:.55rem .35rem .45rem;text-align:center">
+        <svg viewBox="0 0 100 100" style="max-width:92px;margin:0 auto"><use href="#faceA" width="100" height="100" color="var(--fg)"/></svg>
+      </div>
+      <div class="op">+</div>
+      <div class="cell" style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:.55rem .35rem .45rem;text-align:center">
+        <svg viewBox="0 0 100 100" style="max-width:92px;margin:0 auto"><use href="#faceB" width="100" height="100" color="var(--fg)"/></svg>
+      </div>
+      <div class="op">=</div>
+      <div class="cell" style="background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:.55rem .35rem .45rem;text-align:center">
+        <svg viewBox="0 0 100 100" style="max-width:92px;margin:0 auto">
+          <g filter="url(#fuzz)" opacity=".6"><use href="#faceA" width="100" height="100" color="var(--fg)"/></g>
+          <g filter="url(#fuzz)" opacity=".6"><use href="#faceB" width="100" height="100" color="var(--fg)"/></g>
+        </svg>
+        <div class="cl" style="font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:.4rem">Time-averaged readout: a useless blend</div>
+      </div>
+    </div>
+    <figcaption><b>Why averaging hid everything.</b> State-resolved readout explains up to ~80% of face-feature
+    variance for the conscious face in state 1 — close to the ~90% ceiling from ideal, conflict-free viewing —
+    while information about the other face drops to chance. Average over both states and you get a blur that
+    matches neither face. (Faces here are schematic stand-ins for the paper's synthetic face stimuli.)</figcaption>
+  </figure>
+  <div class="stats">
+    <div class="stat"><div class="v" style="color:var(--conscious)">61% vs 4%</div><div class="l">single-trial decoding of conscious vs suppressed identity within state 1 (chance: 10%)</div></div>
+    <div class="stat"><div class="v">~80%</div><div class="l">face-feature variance explained in-state (ceiling ≈ 90%)</div></div>
+    <div class="stat"><div class="v">1,500</div><div class="l">unique faces used to map each cell's feature code</div></div>
+  </div>
+</section>
+
+<section class="col">
+  <div class="eyebrow"><span class="n">06</span><span>Is it real?</span></div>
+  <h2>Ruling out the ways this could be an illusion</h2>
+  <p>
+    Sorting noisy data into two bins and then reading each bin back out can manufacture “states” from nothing —
+    the authors say so themselves. So they stress-tested the finding. The decisive check:
+    <strong>infer the states from one half of the neurons, reconstruct the faces from the other half</strong>.
+    If the switching were just private noise in each cell, this would collapse. It didn't.
+  </p>
+  <figure class="fig">
+    <div class="mxWrap">
+    <table class="mx">
+      <tr><th style="text-align:left">Test</th><th class="real">Real data</th><th>True 2-state model</th><th>Averaging model</th><th>Uncoordinated cells</th></tr>
+      <tr><td>Circular reconstruction (weak test)</td><td class="real ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td></tr>
+      <tr><td>Held-out-neuron reconstruction</td><td class="real ok">✓</td><td class="ok">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+      <tr><td>Tuning reversal in held-out cells</td><td class="real ok">✓</td><td class="ok">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+      <tr><td>Two states fit better than one</td><td class="real ok">✓</td><td class="ok">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+    </table>
+    </div>
+    <figcaption><b>Only genuine, coordinated switching survives every test.</b> Simulated populations that merely
+    average the two faces, or whose cells flip independently, pass the circular analysis but fail the
+    cross-validated ones — the real data behaves like the true two-state model. Further controls: the alternation
+    happens <em>within</em> single trials (not across them), shuffled templates produce garbage, and the states are
+    independent of global On/Off excitability rhythms.</figcaption>
+  </figure>
+</section>
+
+<section class="col">
+  <div class="eyebrow"><span class="n">07</span><span>Puzzle, solved — with a twist</span></div>
+  <h2>Same neurons, two channels — and a tag for awareness</h2>
+  <p>
+    The alternation isn't two teams of neurons taking turns. <strong>The same cells encode both faces</strong>,
+    switching which one they express (the gains correlate at r = 0.90 across cells). Split the data by state and
+    the 30-year puzzle dissolves:
+  </p>
+  <figure class="fig">
+    <div class="scatRow">
+      <div class="scat">
+        <svg viewBox="0 0 160 160" id="scatS1"></svg>
+        <div class="sl"><b>Within State 1</b><br>cells act as if the <span class="k-conscious">seen</span> face were alone (slope 0.93)</div>
+      </div>
+      <div class="scat">
+        <svg viewBox="0 0 160 160" id="scatS2"></svg>
+        <div class="sl"><b>Within State 2</b><br>selectivity <em>inverts</em> — cells track the <span class="k-suppressed">unseen</span> face (slope −0.76)</div>
+      </div>
+    </div>
+    <figcaption><b>Weak average modulation = two strong, opposite signals canceling out.</b> Same axes as the guide
+    in chapter 02 — and here, at last, the clouds land on the reference lines: within state 1 the data climbs onto
+    the <b style="color:var(--conscious)">+1 diagonal</b> (tracks the seen face), within state 2 it flips onto the
+    <b style="color:var(--suppressed)">−1 diagonal</b> (tracks the unseen face). Average over the flicker and you
+    land near zero — exactly the limp slope earlier studies saw.</figcaption>
+  </figure>
+  <p>
+    One asymmetry remains, and it may be the most important clue: tuning is <strong>~1.21× steeper</strong> during
+    conscious epochs, and a simple linear decoder can tell the two states apart (66% across all stimuli). The
+    brain doesn't just carry both images — <strong>it marks which epochs are destined for awareness</strong>.
+  </p>
+  <div class="take">
+    “Conscious access requires temporal selection beyond localization” — the signature of awareness isn't a
+    <em>place</em> in the brain, but <em>when</em>, and with what amplification, a representation is expressed.
+  </div>
+</section>
+
+<section class="col">
+  <div class="eyebrow"><span class="n">08</span><span>Why it matters</span></div>
+  <h2>Rewriting the search for consciousness</h2>
+  <p>
+    The same interleaved structure appeared in <strong>prefrontal cortex</strong> — so neither the “front” nor the
+    “back” of the brain holds a pure conscious signal in its average activity. Both multiplex seen and unseen
+    content in time. Teams hunting for the neural correlates of consciousness by comparing region-averaged
+    activity (including recent adversarial collaborations) may have been averaging away the very signal they sought.
+  </p>
+  <ul class="clean">
+    <li><strong>Unconscious influence, explained.</strong> Suppressed images are known to nudge behavior, attention,
+      and emotion. Now we know why: the unseen image gets rich, full-fidelity cortical representation — just in
+      epochs that never reach awareness.</li>
+    <li><strong>A general coding trick?</strong> Rhythmic attention sampling, working-memory gamma bursts,
+      orbitofrontal value flickering, hippocampal map flickering — time-sharing may be how the cortex routinely
+      keeps multiple representations alive in one population.</li>
+    <li><strong>The next question.</strong> If both images get their moments, what routes only some micro-epochs
+      into awareness, report, and behavior? The decodable “conscious tag” suggests a dynamic gating mechanism —
+      perhaps the suppressed epochs are the brain privately exploring alternative interpretations of the world.</li>
+  </ul>
+  <div class="caveats" style="margin-top:1.6rem">
+    <b>Read with care:</b> this is a <b>preprint</b> (posted Oct 16, 2026), not yet peer-reviewed. Data come from
+    two macaques viewing faces in flash suppression; whether the same temporal multiplexing holds for other
+    stimuli, other rivalry dynamics, and human brains is open. Coordination of the flicker <em>across</em> brain
+    areas was weak — each region may run on its own clock.
+  </div>
+</section>
+
+<section class="col">
+  <div class="eyebrow"><span class="n">09</span><span>Philosophical implications</span></div>
+  <h2>Does this vindicate a functionalist view of consciousness?</h2>
+  <p>
+    Partly — and it helps to separate two claims. The weaker one is <strong>physicalism</strong>: that conscious
+    experience traces to physical, neurological events. These results are striking evidence for tight neural
+    correlates — you can reconstruct what the animal is seeing from the right 60-millisecond slices of activity.
+    But correlates alone don't settle the metaphysics; even a dualist can accept that experience is
+    <em>accompanied</em> by brain activity. And note what's being measured: <strong>conscious access</strong> —
+    which contents become available for report and behavior (what Ned Block calls <em>access consciousness</em>) —
+    not phenomenal experience itself.
+  </p>
+  <p>
+    The stronger, more interesting boost goes to <strong>functionalism</strong> — the view that what makes a state
+    conscious is the causal <em>role</em> it plays, not where it sits or what content it carries. The key observation:
+    the seen and unseen faces get <em>identical representational content</em>. Same neurons, same feature code,
+    comparable fidelity. So content can't be what makes an epoch conscious. What differs is functional:
+  </p>
+  <figure class="fig">
+    <div class="mxWrap">
+    <table class="mx">
+      <tr><th style="text-align:left">Property of the epoch</th><th>State 1 · <span style="color:var(--conscious)">conscious</span></th><th>State 2 · <span style="color:var(--suppressed)">suppressed</span></th></tr>
+      <tr><td>Representational content (which face, at what fidelity)</td><td class="ok" colspan="2">identical — same cells, same code, ~equal quality</td></tr>
+      <tr><td>Gain (steepness of tuning)</td><td class="real">amplified ~1.21×</td><td>baseline</td></tr>
+      <tr><td>Decodable “awareness tag”</td><td class="real ok">present</td><td class="no">absent</td></tr>
+      <tr><td>Reaches report &amp; behavior</td><td class="real ok">yes</td><td class="no">no (influences it only covertly)</td></tr>
+    </table>
+    </div>
+    <figcaption><b>Content is shared; role is what differs.</b> If two epochs carry the same representation and only
+    one is experienced, the difference between conscious and unconscious must lie in what the brain <em>does</em>
+    with the representation — amplification, tagging, routing — not in the representation itself. That is the
+    functionalist's picture almost verbatim, and it sits naturally with Global Workspace–style theories, where
+    consciousness is broadcast and access. It is correspondingly awkward for views that identify experience with
+    the sensory representation itself.</figcaption>
+  </figure>
+  <p>
+    At the same time, the result embarrasses the <strong>localizationist</strong> framing of nearly every theory.
+    The field's flagship debate — is consciousness in the front of the brain or the back? — presupposed that
+    somewhere, average activity would cleanly reflect experience. Here, neither prefrontal nor sensory cortex
+    holds a pure conscious signal in its average; the distinction lives in <em>time, gain, and routing</em>,
+    not in place.
+  </p>
+  <div class="take">
+    The honest summary: strong evidence that conscious <em>access</em> is a specific, mechanistically tractable
+    physical process; real support for role-based (functionalist) accounts over content- or location-based ones;
+    and deliberate silence on the hard problem — <em>why</em> the amplified, tagged epochs are accompanied by
+    experience at all.
+  </div>
+  <p class="small">
+    This section is interpretation beyond the preprint: the authors frame their finding as “temporal selection
+    beyond localization” and stop short of adjudicating between philosophical theories of consciousness.
+  </p>
+</section>
+
+<footer class="col">
+  <p><strong style="color:var(--fg)">Source.</strong> All findings, figures, and numbers in this explainer are drawn from the preprint below; diagrams are schematic re-illustrations, and the face images are abstract stand-ins for the study's synthetic stimuli.</p>
+  <p><strong style="color:var(--fg)">About this explainer.</strong> This is an independent summary prepared with the help of Claude, Anthropic's AI assistant. It has not been reviewed or endorsed by the paper's authors; any errors of simplification are the explainer's, not theirs. Sections 09's philosophical framing is interpretation, not a claim of the paper. The preprint is distributed under a <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</a> license, which permits summaries and adaptations with attribution.</p>
+  <div class="cite">Hesse JK, Lanfranchi FF, McGrory C, Shi Y, Engel TA, Tsao DY. Rapid alternation of conscious and suppressed stimulus representations in the primate brain. bioRxiv (2026). doi: <a href="https://doi.org/10.64898/2026.10.15.759299">10.64898/2026.10.15.759299</a> · CC-BY 4.0</div>
+</footer>
+
+<!-- shared SVG defs -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="fuzz" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="0.9"/>
+    </filter>
+    <!-- Face A: round, soft features -->
+    <symbol id="faceA" viewBox="0 0 100 100">
+      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+        <circle cx="50" cy="52" r="34"/>
+        <circle cx="22" cy="30" r="9"/>
+        <circle cx="78" cy="30" r="9"/>
+        <circle cx="38" cy="46" r="4.5" fill="currentColor" stroke="none"/>
+        <circle cx="62" cy="46" r="4.5" fill="currentColor" stroke="none"/>
+        <path d="M 44 60 Q 50 66 56 60"/>
+        <path d="M 42 73 Q 50 79 58 73"/>
+        <path d="M 30 36 q 6 -5 12 -2 M 58 34 q 6 -3 12 2"/>
+      </g>
+    </symbol>
+    <!-- Face B: angular, narrow features -->
+    <symbol id="faceB" viewBox="0 0 100 100">
+      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 50 16 L 80 32 L 84 62 L 64 86 L 36 86 L 16 62 L 20 32 Z"/>
+        <path d="M 20 32 L 10 16 L 30 22 M 80 32 L 90 16 L 70 22"/>
+        <path d="M 32 46 h 12 M 56 46 h 12"/>
+        <path d="M 30 38 l 12 3 M 70 38 l -12 3"/>
+        <path d="M 46 58 l 4 6 l 4 -6"/>
+        <path d="M 40 74 h 20"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  "use strict";
+  var reduced = false;
+  try { reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(e){}
+
+  // deterministic PRNG
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+  // ---- state sequence (one second, ~exponential dwells around 60ms) ----
+  function makeSegments(seed){
+    var r = mulberry32(seed), segs=[], t=0, state = r()<0.5?0:1;
+    while(t<1000){
+      var d = Math.max(15, Math.min(220, -60*Math.log(1-r())));
+      if(t+d>1000) d = 1000-t;
+      segs.push({s:state, t0:t, d:d});
+      t+=d; state = 1-state;
+    }
+    return segs;
+  }
+  function renderTrack(el, segs){
+    if(!el) return;
+    var html="";
+    for(var i=0;i<segs.length;i++){
+      var g=segs[i];
+      html += '<div class="seg '+(g.s===0?'c':'s')+'" style="left:'+(g.t0/10)+'%;width:'+(g.d/10)+'%"></div>';
+    }
+    el.innerHTML = html;
+    return segs;
+  }
+
+  var heroSegs = makeSegments(7);
+  renderTrack(document.getElementById("heroTrack"), heroSegs);
+
+  var demoSegs = makeSegments(42);
+  var demoTrack = document.getElementById("demoTrack");
+  renderTrack(demoTrack, demoSegs);
+
+  var cardC = document.getElementById("cardC"), cardS = document.getElementById("cardS");
+  var speedLbl = document.getElementById("demoSpeed");
+
+  if(reduced){
+    if(cardC) cardC.classList.add("on");
+    if(cardS) cardS.classList.add("on");
+    if(speedLbl) speedLbl.textContent = "states alternate ~every 60 ms";
+  } else if(demoTrack && cardC && cardS){
+    var head = document.createElement("div");
+    head.className = "head";
+    demoTrack.appendChild(head);
+    var DUR = 12000; // 12s per sweep -> 1/12 real speed, call it slow-motion
+    if(speedLbl) speedLbl.textContent = "slow motion — real switches: ~every 60 ms";
+    var start = null, lastState = -1;
+    function stateAt(ms){
+      for(var i=0;i<demoSegs.length;i++){
+        var g=demoSegs[i];
+        if(ms>=g.t0 && ms<g.t0+g.d) return g.s;
+      }
+      return demoSegs[demoSegs.length-1].s;
+    }
+    function frame(ts){
+      if(start===null) start=ts;
+      var p = ((ts-start)%DUR)/DUR;      // 0..1
+      var ms = p*1000;
+      head.style.left = (p*100)+"%";
+      var st = stateAt(ms);
+      if(st!==lastState){
+        lastState=st;
+        cardC.classList.toggle("on", st===0);
+        cardS.classList.toggle("on", st===1);
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // ---- concept scatters ----
+  function scatter(id, slope, noise, seed, dotColor){
+    var svg = document.getElementById(id);
+    if(!svg) return;
+    var r = mulberry32(seed);
+    var W=160, pad=16, c=W/2;
+    var parts=[];
+    // axes
+    parts.push('<line x1="'+pad+'" y1="'+c+'" x2="'+(W-pad)+'" y2="'+c+'" stroke="var(--line)"/>');
+    parts.push('<line x1="'+c+'" y1="'+pad+'" x2="'+c+'" y2="'+(W-pad)+'" stroke="var(--line)"/>');
+    // reference diagonals (+1 and −1, as in the how-to-read guide)
+    parts.push('<line x1="'+pad+'" y1="'+(W-pad)+'" x2="'+(W-pad)+'" y2="'+pad+'" stroke="var(--line)" stroke-dasharray="3 4"/>');
+    parts.push('<line x1="'+pad+'" y1="'+pad+'" x2="'+(W-pad)+'" y2="'+(W-pad)+'" stroke="var(--line)" stroke-dasharray="3 4"/>');
+    parts.push('<text x="'+(W-pad-3)+'" y="'+(pad+9)+'" font-size="8" text-anchor="end">+1</text>');
+    parts.push('<text x="'+(W-pad-3)+'" y="'+(W-pad-4)+'" font-size="8" text-anchor="end">−1</text>');
+    for(var i=0;i<46;i++){
+      var x = (r()*2-1)*0.85;                       // unambiguous MI, -0.85..0.85
+      var y = x*slope + (r()*2-1)*noise;
+      if(y>1) y=1; if(y<-1) y=-1;
+      var px = c + x*(c-pad), py = c - y*(c-pad);
+      parts.push('<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="2.6" fill="'+dotColor+'" fill-opacity="0.85"/>');
+    }
+    // fitted slope line
+    var x0=-0.9, x1=0.9;
+    parts.push('<line x1="'+(c+x0*(c-pad))+'" y1="'+(c-x0*slope*(c-pad))+'" x2="'+(c+x1*(c-pad))+'" y2="'+(c-x1*slope*(c-pad))+'" stroke="'+dotColor+'" stroke-width="2"/>');
+    parts.push('<text x="'+(W-pad)+'" y="'+(c-5)+'" font-size="8.5" text-anchor="end">alone →</text>');
+    parts.push('<text x="'+(c+5)+'" y="'+(pad+4)+'" font-size="8.5">rivalry ↑</text>');
+    svg.innerHTML = parts.join("");
+  }
+  scatter("scatUnamb", 1.0, 0.07, 11, "var(--fg)");
+  scatter("scatAvg",   0.23, 0.13, 12, "var(--fg)");
+  scatter("scatS1",    0.93, 0.16, 13, "var(--conscious)");
+  scatter("scatS2",   -0.76, 0.18, 14, "var(--suppressed)");
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  var G = {
+    demo:{t:"How this works", d:"Tap or hover any dotted term for a plain-English definition. Tap elsewhere or press Escape to dismiss."},
+    percept:{t:"Percept", d:"What you consciously experience at a given moment — the image as it appears to you, which can differ from what is physically on the screen (the stimulus)."},
+    epoch:{t:"Epoch / micro-epoch", d:"Simply a stretch of time. Here: a brief window, tens of milliseconds long, during which the neural population holds one stable pattern before switching."},
+    suppressed:{t:"Suppressed", d:"Still hitting the eye, but blocked from awareness — the image is physically present yet you do not consciously see it."},
+    rivalry:{t:"(Binocular) rivalry", d:"When the two eyes see conflicting images, awareness does not blend them — it alternates between them every few seconds. The images compete for consciousness."},
+    population:{t:"Population", d:"A set of neurons recorded at the same time. The information is read from their combined activity pattern, not from any single cell."},
+    pfc:{t:"Prefrontal cortex", d:"The front-most part of the brain's cortex, associated with decisions, working memory, and cognitive control — the 'front' candidate home of consciousness."},
+    it:{t:"Inferotemporal (IT) cortex", d:"A region on the lower temporal lobe, near the end of the visual processing chain, where object and face recognition happen — part of the 'back' candidate home of consciousness."},
+    facepatch:{t:"Face patch", d:"A small island of cortex packed with neurons that respond mainly to faces. Primates have a connected network of them, which makes face processing unusually easy to study."},
+    facespace:{t:"Face space", d:"A coordinate system in which every face is a point described by about 50 feature numbers (shape, texture). Face cells respond in a simple, linear way along axes of this space — which is what makes the neural code readable."},
+    neuropixels:{t:"Neuropixels", d:"A needle-thin silicon probe with hundreds of recording sites along its shaft, letting researchers listen to hundreds of neurons at once."},
+    selectivity:{t:"Selectivity", d:"How differently a neuron responds to different images — firing much more for face A than face B means high selectivity."},
+    tuning:{t:"Tuning", d:"The systematic way a neuron's response varies with the stimulus — its preference profile. Steeper tuning = stronger, more distinct responses."},
+    gain:{t:"Gain", d:"The volume knob on a neuron's response: higher gain means the same preferences expressed with a stronger signal."},
+    decoder:{t:"Decoding", d:"Using a mathematical readout — trained on trials where the answer is known — to infer from the firing pattern what the brain is representing."},
+    hmm:{t:"HMM (hidden Markov model)", d:"A statistical tool that infers hidden states behind noisy data. Here it labels each moment of spiking activity as State 1 or State 2, without being told when switches happen."},
+    autocorr:{t:"Autocorrelation", d:"A measure of how similar a signal is to itself at increasing time lags. It gives an independent estimate of how long the states last, without assuming any state model."},
+    dwell:{t:"Dwell time", d:"How long the population stays in one state before switching to the other."},
+    crossval:{t:"Cross-validated", d:"Tested on data (or neurons) that were not used to build the model — the standard safeguard against an analysis fooling itself."},
+    phenomenal:{t:"Phenomenal experience", d:"The felt, subjective side of consciousness — what it is like to see red — as opposed to what you can report or act on (access)."},
+    dualist:{t:"Dualist", d:"Someone who holds that mind and matter are two fundamentally different kinds of thing, so experience is not identical to brain activity."},
+    gw:{t:"Global Workspace", d:"A family of theories holding that content becomes conscious when it is broadcast widely — made available to the brain's systems for memory, report, and action. Usually associated with prefrontal cortex."},
+    iit:{t:"Integrated Information (IIT)", d:"A theory locating consciousness in how much a system's parts irreducibly shape one another; it points to posterior (back-of-brain) cortex as the key substrate."},
+    rp:{t:"Recurrent Processing", d:"The theory that consciousness arises when sensory areas enter feedback loops among themselves, with no frontal involvement required."},
+    hardproblem:{t:"The hard problem", d:"Philosopher David Chalmers' term for the deepest puzzle: why is any of this physical processing accompanied by subjective experience at all, rather than happening in the dark?"},
+    ncc:{t:"Neural correlates", d:"The minimal patterns of brain activity that reliably accompany a specific conscious experience."},
+    multiplex:{t:"Multiplexing", d:"Carrying several signals over one channel by rapidly taking turns — like time-sharing a single radio frequency."},
+    variance:{t:"Variance explained", d:"How much of the variation in the true face's features the neural readout captures. 100% would be a perfect reconstruction; 0% is no better than guessing."},
+    slope:{t:"Slope", d:"The steepness of the best-fit line. Slope 1: responses during rivalry match responses when the face is shown alone. Slope 0: no relationship. Negative: preferences have inverted."},
+    advcollab:{t:"Adversarial collaboration", d:"A study in which rival theory camps agree in advance on predictions and tests, then run the experiment together — as in the recent Global Workspace vs. IIT collaborations."}
+  };
+  var PATS = [
+    ["adversarial collaborations?","advcollab"],
+    ["neural correlates","ncc"],
+    ["global workspace","gw"],
+    ["integrated information","iit"],
+    ["recurrent processing","rp"],
+    ["hard problem","hardproblem"],
+    ["prefrontal(?: cortex)?","pfc"],
+    ["inferotemporal","it"],
+    ["face patch(?:es)?","facepatch"],
+    ["face space","facespace"],
+    ["dwell(?: time)?","dwell"],
+    ["cross-validated","crossval"],
+    ["micro-epochs?","epoch"],
+    ["epochs?","epoch"],
+    ["percepts?","percept"],
+    ["suppressed","suppressed"],
+    ["rivalry","rivalry"],
+    ["neuropixels","neuropixels"],
+    ["population","population"],
+    ["selectivity","selectivity"],
+    ["tuning","tuning"],
+    ["gains?","gain"],
+    ["decoders?|decoding|decoded","decoder"],
+    ["hmm","hmm"],
+    ["autocorrelation","autocorr"],
+    ["phenomenal","phenomenal"],
+    ["dualist","dualist"],
+    ["multiplex(?:ing|es)?","multiplex"],
+    ["variance","variance"],
+    ["slope","slope"]
+  ];
+  var MASTER = new RegExp("\\b(?:" + PATS.map(function(p){return p[0]}).join("|") + ")\\b", "gi");
+  var ANCHORED = PATS.map(function(p){ return {rx:new RegExp("^(?:"+p[0]+")$","i"), k:p[1]}; });
+  function keyFor(s){ for(var i=0;i<ANCHORED.length;i++){ if(ANCHORED[i].rx.test(s)) return ANCHORED[i].k; } return null; }
+
+  var areas = document.querySelectorAll("header.hero, section");
+  Array.prototype.forEach.call(areas, function(sec){
+    var used = {};
+    function walk(node){
+      if(node.nodeType === 3){ handle(node); return; }
+      if(node.nodeType !== 1) return;
+      var t = node.tagName;
+      if(t==="A"||t==="SCRIPT"||t==="STYLE"||t==="svg"||t==="SVG") return;
+      if(node.classList && node.classList.contains("gl")) return;
+      var kids = Array.prototype.slice.call(node.childNodes);
+      for(var i=0;i<kids.length;i++) walk(kids[i]);
+    }
+    function handle(tn){
+      var text = tn.nodeValue;
+      MASTER.lastIndex = 0;
+      var m, out=[], last=0;
+      while((m = MASTER.exec(text))){
+        var k = keyFor(m[0]);
+        if(!k || used[k] || !G[k]) continue;
+        used[k]=true;
+        out.push({start:m.index, end:m.index+m[0].length, k:k});
+      }
+      if(!out.length) return;
+      var frag = document.createDocumentFragment();
+      for(var i=0;i<out.length;i++){
+        var o=out[i];
+        if(o.start>last) frag.appendChild(document.createTextNode(text.slice(last,o.start)));
+        var sp = document.createElement("span");
+        sp.className="gl"; sp.setAttribute("data-k",o.k); sp.setAttribute("tabindex","0");
+        sp.textContent = text.slice(o.start,o.end);
+        frag.appendChild(sp); last=o.end;
+      }
+      if(last<text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+      tn.parentNode.replaceChild(frag, tn);
+    }
+    var els = sec.querySelectorAll("p, figcaption, li, .take, .caveats, .stat .l, .sl");
+    Array.prototype.forEach.call(els, function(el){ walk(el); });
+  });
+
+  var tip=null, pinned=null;
+  function hide(){ if(tip&&tip.parentNode) tip.parentNode.removeChild(tip); tip=null; pinned=null; }
+  function show(span){
+    var k=span.getAttribute("data-k"), e=G[k]; if(!e) return;
+    if(!tip){ tip=document.createElement("div"); tip.className="glTip"; document.body.appendChild(tip); }
+    tip.innerHTML = '<div class="t"></div><div class="d"></div>';
+    tip.querySelector(".t").textContent=e.t;
+    tip.querySelector(".d").textContent=e.d;
+    tip.style.left="0px"; tip.style.top="0px";
+    var w=tip.offsetWidth, r=span.getBoundingClientRect();
+    var x=r.left+window.scrollX;
+    var max=window.scrollX+document.documentElement.clientWidth-w-12;
+    if(x>max)x=max; var min=window.scrollX+12; if(x<min)x=min;
+    tip.style.left=x+"px"; tip.style.top=(r.bottom+window.scrollY+8)+"px";
+  }
+  document.addEventListener("mouseover",function(e){ var s=e.target.closest&&e.target.closest(".gl"); if(s&&!pinned) show(s); });
+  document.addEventListener("mouseout",function(e){ var s=e.target.closest&&e.target.closest(".gl"); if(s&&!pinned) hide(); });
+  document.addEventListener("click",function(e){
+    var s=e.target.closest&&e.target.closest(".gl");
+    if(s){ if(pinned===s){ hide(); } else { pinned=s; show(s); } return; }
+    if(e.target.closest&&e.target.closest(".glTip")) return;
+    hide();
+  });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape") hide(); });
+  document.addEventListener("focusin",function(e){ var s=e.target.closest&&e.target.closest(".gl"); if(s&&!pinned) show(s); });
+  document.addEventListener("focusout",function(e){ var s=e.target.closest&&e.target.closest(".gl"); if(s&&!pinned) hide(); });
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  var btn=document.getElementById("themeBtn"); if(!btn) return;
+  var sun=btn.querySelector(".ic-sun"), moon=btn.querySelector(".ic-moon");
+  var root=document.documentElement;
+  function sysDark(){ try{ return window.matchMedia("(prefers-color-scheme: dark)").matches; }catch(e){ return true; } }
+  var mode=null;
+  try{ var s=localStorage.getItem("theme"); if(s==="light"||s==="dark") mode=s; }catch(e){}
+  function current(){ return mode || (sysDark()?"dark":"light"); }
+  function apply(){
+    if(mode) root.setAttribute("data-theme",mode); else root.removeAttribute("data-theme");
+    var dark = current()==="dark";
+    if(sun) sun.hidden = !dark;
+    if(moon) moon.hidden = dark;
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+  }
+  btn.addEventListener("click",function(){
+    mode = current()==="dark" ? "light" : "dark";
+    try{ localStorage.setItem("theme",mode); }catch(e){}
+    apply();
+  });
+  try{ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){ if(!mode) apply(); }); }catch(e){}
+  apply();
+})();
+</script>
+
+</body>
+</html>
